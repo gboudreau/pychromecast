@@ -93,8 +93,10 @@ def get_chromecasts_as_dict(tries=None, **filters):
     in the first place.
     """
     # pylint: disable=star-args
-    return {cc.device.friendly_name: cc
-            for cc in get_chromecasts(tries=tries, **filters)}
+    chromecasts = {}
+    for cc in get_chromecasts(tries=tries, **filters):
+        chromecasts[cc.device.friendly_name] = cc
+    return chromecasts
 
 
 def get_chromecast(strict=False, tries=None, **filters):
@@ -125,7 +127,7 @@ def get_chromecast(strict=False, tries=None, **filters):
         if strict:
             raise MultipleChromecastsFoundError(
                 'More than one Chromecast was found specifying '
-                'the filter criteria: {}'.format(filters))
+                'the filter criteria: {0}'.format(filters))
         else:
             return results[0]
 
@@ -133,7 +135,7 @@ def get_chromecast(strict=False, tries=None, **filters):
         if strict:
             raise NoChromecastFoundError(
                 'No Chromecasts matching filter critera were found:'
-                ' {}'.format(filters))
+                ' {0}'.format(filters))
         else:
             return None
 
@@ -155,7 +157,7 @@ class Chromecast(object):
 
         if not self.device:
             raise ChromecastConnectionError(
-                "Could not connect to {}".format(self.host))
+                "Could not connect to {0}".format(self.host))
 
         self.status = None
         self.media_status = None
@@ -197,7 +199,7 @@ class Chromecast(object):
 
     def start_app(self, app_id):
         """ Start an app on the Chromecast. """
-        self.logger.info("Starting app {}".format(app_id))
+        self.logger.info("Starting app {0}".format(app_id))
 
         self.socket_client.receiver_controller.launch_app(app_id)
 
@@ -230,7 +232,7 @@ class Chromecast(object):
         self.socket_client.stop.set()
 
     def __repr__(self):
-        return "Chromecast({}, {}, {}, {}, api={}.{})".format(
+        return "Chromecast({0}, {1}, {2}, {3}, api={4}.{5})".format(
             self.host, self.device.friendly_name, self.device.model_name,
             self.device.manufacturer, self.device.api_version[0],
             self.device.api_version[1])
